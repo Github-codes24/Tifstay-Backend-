@@ -1,11 +1,11 @@
+// src/routes/user.routes.js
 const express = require('express');
 const router = express.Router();
-const ctrl = require('../controllers/user.controller');
-const { auth } = require('../middlewares/auth.middleware');
+const userCtrl = require('../controllers/user.controller');
+const auth = require('../middlewares/auth.middleware');
 
-router.post('/register', ctrl.register);
-router.post('/login', ctrl.login);
-router.get('/me', auth(), ctrl.me);
-router.get('/', auth('admin'), ctrl.list);
+router.get('/me', auth, userCtrl.getProfile);
+router.put('/me', auth, userCtrl.updateProfile);
+router.post('/me/change-password', auth, userCtrl.changePassword);
 
 module.exports = router;

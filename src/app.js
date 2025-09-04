@@ -12,6 +12,8 @@ const userRoutes = require('./routes/user.routes');
 const postRoutes = require('./routes/post.routes');
 const hostelRoutes = require("./routes/hostelRoutes");
 const logger = require('./config/logger');
+const authRoutes = require('./routes/auth.routes');
+
 
 const app = express();
 
@@ -32,6 +34,9 @@ app.get('/health', (req, res) => res.json({ status: 'ok', uptime: process.uptime
 app.use('/api/users', userRoutes);
 app.use('/api/posts', postRoutes);
 app.use("/api/hostels", hostelRoutes);
+
+app.use('/api/auth', authRoutes);
+
 // Swagger setup
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
@@ -63,5 +68,4 @@ app.use(errorHandler(logger));
 module.exports = app;
 
 
-// Routes
-app.use("/api/hostels", hostelRoutes);
+

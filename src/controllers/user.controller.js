@@ -1,24 +1,29 @@
-const userService = require('../services/user.service');
-const { signToken } = require('../utils/jwt');
-const { ok, created } = require('../utils/response');
+// src/controllers/user.controller.js
+const AuthService = require('../services/auth.service');
+const { ok, serverError, badRequest } = require('../utils/response');
 
-exports.register = async (req, res) => {
-  const user = await userService.createUser(req.body);
-  return created(res, { user });
+exports.getProfile = async (req, res) => {
+  try {
+    // req.user set by auth middleware
+    const userId = req.user.id;
+    const User = require('../models/user.model');
+    const user = await User.findById(userId).select('-password -resetPasswordToken -resetPasswordExpires');
+    return ok(res, { data: user });
+  } catch (err) { return serverError(res, err.message); }
 };
 
-exports.login = async (req, res) => {
-  const user = await userService.authenticate(req.body.email, req.body.password);
-  const token = signToken({ id: user.id, role: user.role });
-  return ok(res, { token, user });
+exports.updateProfile = async (req, res) => {
+  try {
+    const user = await AuthService.updateProfile(req.user.id, req.body);
+    return ok(res, { data: user, message: 'Profile updated' });
+  } catch (err) { return serverError(res, err.message); }
 };
 
-exports.me = async (req, res) => {
-  const user = await userService.getUserById(req.user.id);
-  return ok(res, { user });
-};
-
-exports.list = async (_req, res) => {
-  const users = await userService.getUsers();
-  return ok(res, { users });
+exports.changePassword = async (req, res) => {
+  try {
+    const { oldPassword, newPassword } = req.body;
+    if (!oldPassword || !newPassword) return badRequest(res, 'oldPassword and newPassword required');
+    const user = await AuthService.changePassword(req.user.id, oldPassword, newPassword);
+    return ok(res, { data: user, message: 'Password changed' });
+  } catch (err) { return serverError(res, err.message); }
 };
