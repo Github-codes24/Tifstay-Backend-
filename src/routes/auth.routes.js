@@ -10,7 +10,7 @@ router.post('/login', authCtrl.login);
 router.post('/google', authCtrl.google);
 
 // Guest login
-router.post('/guest', authCtrl.guest);
+// router.post('/guest', authCtrl.guest);
 
 // Password reset
 router.post('/forgot', authCtrl.forgot);
