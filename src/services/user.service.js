@@ -1,3 +1,4 @@
+// src/services/user.service.js
 const User = require('../models/user.model');
 
 async function createUser(payload) {
@@ -16,8 +17,7 @@ async function getUserById(id) {
 }
 
 async function updateUser(id, payload) {
-  const user = await User.findByIdAndUpdate(id, payload, { new: true });
-  return user;
+  return User.findByIdAndUpdate(id, payload, { new: true });
 }
 
 async function deleteUser(id) {

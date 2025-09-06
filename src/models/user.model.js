@@ -4,28 +4,49 @@ const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 
 const BankSchema = new mongoose.Schema({
-  accountNumber: String,
-  ifsc: String,
+  accountNumber: { type: String, required: true },
+  ifsc: { type: String, required: true },
   accountType: { type: String, enum: ['Savings', 'Current'], default: 'Savings' },
-  accountName: String
+  accountName: { type: String, required: true }
+}, { _id: false });
+
+const GuestSchema = new mongoose.Schema({
+  aadhaarNumber: { type: String, required: true },
+  aadhaarCardUrl: { type: String }, // file upload path / cloud URL
+  digilockerVerified: { type: Boolean, default: false }
 }, { _id: false });
 
 const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true, lowercase: true, index: true },
-  password: { type: String }, // if social login, may be null
+  password: { type: String }, // may be null for guest/social login
   phone: { type: String },
-  provider: { type: String, enum: ['local','google'], default: 'local' },
+  provider: { type: String, enum: ['local', 'google'], default: 'local' },
   avatar: { type: String },
-  bank: BankSchema,
+
+  profile: { 
+    type: String, 
+    enum: ['student', 'guest', 'hostel_owner', 'tiffin_provider'], 
+    required: true 
+  },
+
+  address: { type: String },
+
+  // conditional fields
+  bank: BankSchema,   // only for hostel_owner / tiffin_provider
+  guest: GuestSchema, // only for guest users
+
+  status: { type: String, enum: ['active', 'disabled'], default: 'active' },
 
   // reset password
   resetPasswordToken: String,
   resetPasswordExpires: Date
 }, { timestamps: true });
 
-// Hash password before save if modified
-UserSchema.pre('save', async function(next){
+/**
+ * Middleware: Hash password if modified
+ */
+UserSchema.pre('save', async function(next) {
   if (!this.isModified('password')) return next();
   if (!this.password) return next();
   const salt = await bcrypt.genSalt(10);
@@ -33,26 +54,34 @@ UserSchema.pre('save', async function(next){
   next();
 });
 
-// Instance method to compare password
+/**
+ * Compare passwords
+ */
 UserSchema.methods.comparePassword = function(candidate) {
   return bcrypt.compare(candidate, this.password);
 };
 
-// Generate reset token (returns plain token, store hashed)
+/**
+ * Generate reset password token
+ */
 UserSchema.methods.generatePasswordReset = function() {
   const token = crypto.randomBytes(20).toString('hex');
-  // store hashed token
   this.resetPasswordToken = crypto.createHash('sha256').update(token).digest('hex');
-  // expires in 1 hour
-  this.resetPasswordExpires = Date.now() + 60*60*1000;
+  this.resetPasswordExpires = Date.now() + 60 * 60 * 1000; // 1 hour
   return token;
 };
 
+/**
+ * Clear reset token
+ */
 UserSchema.methods.clearPasswordReset = function() {
   this.resetPasswordToken = undefined;
   this.resetPasswordExpires = undefined;
 };
 
+/**
+ * Hide sensitive fields in JSON
+ */
 UserSchema.set('toJSON', {
   transform: (_doc, ret) => {
     delete ret.password;
