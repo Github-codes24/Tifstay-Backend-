@@ -9,8 +9,8 @@ const path = require("path");
 
 const { notFound, errorHandler } = require('./middlewares/error.middleware');
 const userRoutes = require('./routes/user.routes');
-const postRoutes = require('./routes/post.routes');
 const hostelRoutes = require("./routes/hostelRoutes");
+const tiffinRoutes = require("./routes/tiffin.routes");
 const logger = require('./config/logger');
 const authRoutes = require('./routes/auth.routes');
 
@@ -32,8 +32,10 @@ app.get('/health', (req, res) => res.json({ status: 'ok', uptime: process.uptime
 
 // API routes
 app.use('/api/users', userRoutes);
-app.use('/api/posts', postRoutes);
+
 app.use("/api/hostels", hostelRoutes);
+
+app.use("/api/tiffins", tiffinRoutes);
 
 app.use('/api/auth', authRoutes);
 

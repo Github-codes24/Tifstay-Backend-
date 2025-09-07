@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const ctrl = require("../controllers/tiffin.controller");
-const auth = require("../middlewares/auth");
-const upload = require("../middlewares/upload");
+// const auth = require("../middlewares/auth");
+const upload = require("../middlewares/upload.middleware");
 
 /**
  * @openapi
@@ -81,7 +81,9 @@ const upload = require("../middlewares/upload");
  *             schema:
  *               $ref: '#/components/schemas/TiffinResponse'
  */
-router.post("/drafts", auth, ctrl.saveDraft);
+// router.post("/drafts", auth, ctrl.saveDraft);
+
+router.post("/drafts", ctrl.saveDraft);
 
 /**
  * @openapi
@@ -110,7 +112,8 @@ router.post("/drafts", auth, ctrl.saveDraft);
  *             schema:
  *               $ref: '#/components/schemas/TiffinResponse'
  */
-router.put("/drafts/:draftId", auth, ctrl.updateDraft);
+// router.put("/drafts/:draftId", auth, ctrl.updateDraft);
+router.put("/drafts/:draftId", ctrl.updateDraft);
 
 /**
  * @openapi
@@ -146,7 +149,9 @@ router.put("/drafts/:draftId", auth, ctrl.updateDraft);
  *             schema:
  *               $ref: '#/components/schemas/TiffinResponse'
  */
-router.post("/drafts/:draftId/photos", auth, upload.array("photos", 8), ctrl.uploadPhotos);
+// router.post("/drafts/:draftId/photos", auth, upload.array("photos", 8), ctrl.uploadPhotos);
+
+router.post("/drafts/:draftId/photos", upload.array("photos", 8), ctrl.uploadPhotos);
 
 /**
  * @openapi
@@ -170,7 +175,8 @@ router.post("/drafts/:draftId/photos", auth, upload.array("photos", 8), ctrl.upl
  *             schema:
  *               $ref: '#/components/schemas/TiffinResponse'
  */
-router.get("/drafts/:draftId/preview", auth, ctrl.previewDraft);
+// router.get("/drafts/:draftId/preview", auth, ctrl.previewDraft);
+router.get("/drafts/:draftId/preview", ctrl.previewDraft);
 
 /**
  * @openapi
@@ -194,7 +200,8 @@ router.get("/drafts/:draftId/preview", auth, ctrl.previewDraft);
  *             schema:
  *               $ref: '#/components/schemas/TiffinResponse'
  */
-router.post("/drafts/:draftId/submit", auth, ctrl.submitDraft);
+// router.post("/drafts/:draftId/submit", auth, ctrl.submitDraft);
+router.post("/drafts/:draftId/submit", ctrl.submitDraft);
 
 /**
  * @openapi
@@ -218,6 +225,8 @@ router.post("/drafts/:draftId/submit", auth, ctrl.submitDraft);
  *             schema:
  *               $ref: '#/components/schemas/TiffinResponse'
  */
-router.get("/:id", auth, ctrl.getTiffin);
+// router.get("/:id", auth, ctrl.getTiffin);
+
+router.get("/:id", ctrl.getTiffin);
 
 module.exports = router;

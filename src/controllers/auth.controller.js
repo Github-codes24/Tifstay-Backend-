@@ -36,16 +36,16 @@ exports.register = async (req, res) => {
     const { profile, guest, bank } = req.body;
 
     // validation logic
-    if (profile === 'guest') {
-      if (!guest?.aadhaarNumber) {
-        return badRequest(res, 'Guest users must provide Aadhaar number');
-      }
-    }
-    if (['hostel_owner', 'tiffin_provider'].includes(profile)) {
-      if (!bank?.accountNumber || !bank?.ifsc) {
-        return badRequest(res, 'Bank details are required for Hostel Owner / Tiffin Provider');
-      }
-    }
+    // if (profile === 'guest') {
+    //   if (!guest?.aadhaarNumber) {
+    //     return badRequest(res, 'Guest users must provide Aadhaar number');
+    //   }
+    // }
+    // if (['hostel_owner', 'tiffin_provider'].includes(profile)) {
+    //   if (!bank?.accountNumber || !bank?.ifsc) {
+    //     return badRequest(res, 'Bank details are required for Hostel Owner / Tiffin Provider');
+    //   }
+    // }
 
     const user = await AuthService.registerLocal(req.body);
     const token = getTokenForUser(user);
