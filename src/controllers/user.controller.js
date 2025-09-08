@@ -1,5 +1,6 @@
 const AuthService = require('../services/auth.service');
-const { ok, serverError, badRequest, notFound } = require('../utils/response');
+const UserService = require('../services/user.service');
+const { ok, serverError, badRequest, notFound, created } = require('../utils/response');
 const User = require('../models/user.model');
 
 /**
@@ -112,6 +113,22 @@ exports.deleteUser = async (req, res) => {
     if (!user) return notFound(res, 'User not found');
     return ok(res, { message: 'User deleted successfully' });
   } catch (err) {
+    return serverError(res, err.message);
+  }
+};
+
+// ADMIN: CREATE USER
+exports.createUser = async (req, res) => {
+  try {
+    const payload = req.body;
+    // minimal validation
+    if (!payload.name || !payload.email) return badRequest(res, 'name and email are required');
+
+    const user = await UserService.createUser(payload);
+    return created(res, { data: user, message: 'User created' });
+  } catch (err) {
+    // maintain friendly messages for duplicate email
+    if (err.message && err.message.toLowerCase().includes('email')) return badRequest(res, err.message);
     return serverError(res, err.message);
   }
 };

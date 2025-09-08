@@ -145,9 +145,10 @@ router.put('/me', auth, userCtrl.updateProfile);
 router.post('/me/change-password', auth, userCtrl.changePassword);
 
 // Admin routes (future: add role check middleware)
-router.get('/', auth, userCtrl.getUsers);       // list all users
-router.get('/:id', auth, userCtrl.getUserById); // get user by id
-router.put('/:id', auth, userCtrl.updateUser);  // update user by id
-router.delete('/:id', auth, userCtrl.deleteUser); // delete user by id
+router.post('/', userCtrl.createUser); // <-- create user (admin)
+router.get('/', userCtrl.getUsers);       // list all users
+router.get('/:id', userCtrl.getUserById); // get user by id
+router.put('/:id', userCtrl.updateUser);  // update user by id
+router.delete('/:id', userCtrl.deleteUser); // delete user by id
 
 module.exports = router;

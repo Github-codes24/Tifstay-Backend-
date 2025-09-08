@@ -4,14 +4,14 @@ const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 
 const BankSchema = new mongoose.Schema({
-  accountNumber: { type: String, required: true },
-  ifsc: { type: String, required: true },
+  accountNumber: { type: String },        // made optional
+  ifsc: { type: String },
   accountType: { type: String, enum: ['Savings', 'Current'], default: 'Savings' },
-  accountName: { type: String, required: true }
+  accountName: { type: String }
 }, { _id: false });
 
 const GuestSchema = new mongoose.Schema({
-  aadhaarNumber: { type: String, required: true },
+  aadhaarNumber: { type: String },        // made optional
   aadhaarCardUrl: { type: String }, // file upload path / cloud URL
   digilockerVerified: { type: Boolean, default: false }
 }, { _id: false });

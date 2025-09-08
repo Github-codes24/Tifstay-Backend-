@@ -26,8 +26,8 @@ exports.createHostel = async (req, res) => {
       return rel.replace(/\\/g, "/");
     }) : [];
 
-    const userId = (req.user && (req.user.id || req.user._id));
-    if (!userId) return badRequest(res, "Authentication required");
+    // const userId = (req.user && (req.user.id || req.user._id));
+    // if (!userId) return badRequest(res, "Authentication required");
 
     // basic validation
     const { name, hostelType } = req.body;
@@ -40,7 +40,7 @@ exports.createHostel = async (req, res) => {
     const rules = parseMaybeJSON(req.body.rules, []);
 
     const hostelData = {
-      user: userId,
+      // user: userId,
       name: req.body.name,
       hostelType: req.body.hostelType,
       description: req.body.description,

@@ -16,7 +16,7 @@ const RoomSchema = new mongoose.Schema({
 
 const HostelSchema = new mongoose.Schema(
   {
-    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    // user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
 
     // Step 1: Basic Info
     name: { type: String, required: true },
