@@ -15,7 +15,9 @@ const { ok, created, serverError, badRequest, notFound } = require('../utils/res
 exports.saveDraft = async (req, res) => {
   try {
     // JWT ke bina testing ke liye dummy userId
-    const userId = "USR"; // hardcoded dummy user
+    // const userId = "USR"; // hardcoded dummy user
+    const userId = req.user && (req.user.id || req.user._id);
+    if (!userId) return badRequest(res, "Authentication required");
 
     const draft = await service.saveDraft(userId, req.body);
     return created(res, { data: draft, message: "Draft saved" });
@@ -26,8 +28,12 @@ exports.saveDraft = async (req, res) => {
 
 exports.updateDraft = async (req, res) => {
   try {
+    const userId = req.user && (req.user.id || req.user._id);
+    if (!userId) return badRequest(res, "Authentication required");
+
     const draft = await service.updateDraft(req.params.draftId, req.user && req.user.id, req.body);
     if (!draft) return notFound(res, "Draft not found or cannot be updated");
+
     return ok(res, { data: draft, message: "Draft updated" });
   } catch (err) {
     return serverError(res, err.message);
@@ -36,6 +42,9 @@ exports.updateDraft = async (req, res) => {
 
 exports.uploadPhotos = async (req, res) => {
   try {
+    const userId = req.user && (req.user.id || req.user._id);
+    if (!userId) return badRequest(res, "Authentication required");
+
     if (!req.files || !req.files.length) return badRequest(res, "No files uploaded");
 
     // map to public-accessible paths (adjust folder if you store elsewhere)
@@ -51,6 +60,9 @@ exports.uploadPhotos = async (req, res) => {
 
 exports.previewDraft = async (req, res) => {
   try {
+    const userId = req.user && (req.user.id || req.user._id);
+    if (!userId) return badRequest(res, "Authentication required");
+
     const draft = await service.previewDraft(req.params.draftId, req.user && req.user.id);
     if (!draft) return notFound(res, "Draft not found or access denied");
     return ok(res, { data: draft, message: "Draft preview" });
@@ -61,6 +73,9 @@ exports.previewDraft = async (req, res) => {
 
 exports.submitDraft = async (req, res) => {
   try {
+    const userId = req.user && (req.user.id || req.user._id);
+    if (!userId) return badRequest(res, "Authentication required");
+
     const draft = await service.submitDraft(req.params.draftId, req.user && req.user.id);
     if (!draft) return notFound(res, "Draft not found or cannot be submitted");
     return ok(res, { data: draft, message: "Draft submitted" });
@@ -71,6 +86,9 @@ exports.submitDraft = async (req, res) => {
 
 exports.getTiffin = async (req, res) => {
   try {
+    const userId = req.user && (req.user.id || req.user._id);
+    if (!userId) return badRequest(res, "Authentication required");
+    
     const tiffin = await service.getTiffin(req.params.id, req.user && req.user.id);
     if (!tiffin) return notFound(res, "Tiffin not found or access denied");
     return ok(res, { data: tiffin, message: "Tiffin fetched" });
