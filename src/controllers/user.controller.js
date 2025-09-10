@@ -132,3 +132,39 @@ exports.createUser = async (req, res) => {
     return serverError(res, err.message);
   }
 };
+
+/**
+ * ADMIN: Get all hostel owners
+ */
+exports.getHostelOwners = async (_req, res) => {
+  try {
+    const users = await UserService.getUsersByProfile('hostel_owner');
+    return ok(res, { data: users, message: 'Hostel owners fetched' });
+  } catch (err) {
+    return serverError(res, err.message);
+  }
+};
+
+/**
+ * ADMIN: Get all guests
+ */
+exports.getGuests = async (_req, res) => {
+  try {
+    const users = await UserService.getUsersByProfile('guest');
+    return ok(res, { data: users, message: 'Guests fetched' });
+  } catch (err) {
+    return serverError(res, err.message);
+  }
+};
+
+/**
+ * ADMIN: Get all tiffin providers
+ */
+exports.getTiffinProviders = async (_req, res) => {
+  try {
+    const users = await UserService.getUsersByProfile('tiffin_provider');
+    return ok(res, { data: users, message: 'Tiffin providers fetched' });
+  } catch (err) {
+    return serverError(res, err.message);
+  }
+};

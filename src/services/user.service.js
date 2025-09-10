@@ -32,11 +32,18 @@ async function authenticate(email, password) {
   return user;
 }
 
+async function getUsersByProfile(profile) {
+  const allowed = ['student', 'guest', 'hostel_owner', 'tiffin_provider'];
+  if (!allowed.includes(profile)) throw new Error('Invalid profile');
+  return User.find({ profile }).sort({ createdAt: -1 });
+}
+
 module.exports = {
   createUser,
   getUsers,
   getUserById,
   updateUser,
   deleteUser,
-  authenticate
+  authenticate,
+  getUsersByProfile
 };

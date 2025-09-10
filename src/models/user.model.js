@@ -21,7 +21,7 @@ const UserSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true, lowercase: true, index: true },
   password: { type: String }, // may be null for guest/social login
   phone: { type: String },
-  provider: { type: String, enum: ['local', 'google'], default: 'local' },
+  provider: { type: String, enum: ['local', 'google', 'guest'], default: 'local' },
   avatar: { type: String },
 
   profile: { 

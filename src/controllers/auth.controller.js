@@ -84,6 +84,19 @@ exports.google = async (req, res) => {
 };
 
 /**
+ * GUEST LOGIN
+ */
+exports.guest = async (req, res) => {
+  try {
+    const user = await AuthService.guestLogin();
+    const token = getTokenForUser(user);
+    return ok(res, { data: { user, token } });
+  } catch (err) {
+    return serverError(res, err.message);
+  }
+};
+
+/**
  * FORGOT PASSWORD
  */
 exports.forgot = async (req, res) => {

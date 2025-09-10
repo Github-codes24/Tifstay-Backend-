@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const ctrl = require("../controllers/tiffin.controller");
-// const auth = require("../middlewares/auth");
 const upload = require("../middlewares/upload.middleware");
+const auth = require("../middlewares/auth.middleware");
 
 /**
  * @openapi
@@ -83,7 +83,7 @@ const upload = require("../middlewares/upload.middleware");
  */
 // router.post("/drafts", auth, ctrl.saveDraft);
 
-router.post("/drafts", ctrl.saveDraft);
+router.post("/drafts", auth, ctrl.saveDraft);
 
 /**
  * @openapi
@@ -113,7 +113,7 @@ router.post("/drafts", ctrl.saveDraft);
  *               $ref: '#/components/schemas/TiffinResponse'
  */
 // router.put("/drafts/:draftId", auth, ctrl.updateDraft);
-router.put("/drafts/:draftId", ctrl.updateDraft);
+router.put("/drafts/:draftId", auth, ctrl.updateDraft);
 
 /**
  * @openapi
@@ -151,7 +151,7 @@ router.put("/drafts/:draftId", ctrl.updateDraft);
  */
 // router.post("/drafts/:draftId/photos", auth, upload.array("photos", 8), ctrl.uploadPhotos);
 
-router.post("/drafts/:draftId/photos", upload.array("photos", 8), ctrl.uploadPhotos);
+router.post("/drafts/:draftId/photos", auth, upload.array("photos", 8), ctrl.uploadPhotos);
 
 /**
  * @openapi
@@ -176,7 +176,7 @@ router.post("/drafts/:draftId/photos", upload.array("photos", 8), ctrl.uploadPho
  *               $ref: '#/components/schemas/TiffinResponse'
  */
 // router.get("/drafts/:draftId/preview", auth, ctrl.previewDraft);
-router.get("/drafts/:draftId/preview", ctrl.previewDraft);
+router.get("/drafts/:draftId/preview", auth, ctrl.previewDraft);
 
 /**
  * @openapi
@@ -201,7 +201,7 @@ router.get("/drafts/:draftId/preview", ctrl.previewDraft);
  *               $ref: '#/components/schemas/TiffinResponse'
  */
 // router.post("/drafts/:draftId/submit", auth, ctrl.submitDraft);
-router.post("/drafts/:draftId/submit", ctrl.submitDraft);
+router.post("/drafts/:draftId/submit", auth, ctrl.submitDraft);
 
 /**
  * @openapi

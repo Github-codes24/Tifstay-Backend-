@@ -6,10 +6,31 @@ const crypto = require('crypto');
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // Local registration
-async function registerLocal({ name, email, password, phone }) {
+async function registerLocal({ name, email, password, phone, profile, guest, bank, address }) {
+  // basic required fields check
+  if (!name || !email || !password) {
+    throw new Error('name, email and password are required');
+  }
+
+  // check duplicate email
   const exists = await User.findOne({ email });
-  if (exists) throw new Error('Email already registered');
-  const user = new User({ name, email, password, phone, provider: 'local' });
+  if (exists) {
+    throw new Error('Email already registered');
+  }
+
+  // create user (password hashing should be handled in User model pre-save)
+  const user = new User({
+    name,
+    email,
+    password,
+    phone: phone || null,
+    provider: 'local',
+    profile: profile || 'guest',
+    guest: guest || undefined,
+    bank: bank || undefined,
+    address: address || undefined
+  });
+
   await user.save();
   return user;
 }

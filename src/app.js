@@ -25,7 +25,7 @@ app.use(helmet());
 app.use(morgan('dev'));
 
 // Serve uploaded images
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 // Health
 app.get('/health', (req, res) => res.json({ status: 'ok', uptime: process.uptime() }));

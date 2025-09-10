@@ -1,22 +1,10 @@
 const service = require("../services/tiffin.service");
 const { ok, created, serverError, badRequest, notFound } = require('../utils/response');
 
-// exports.saveDraft = async (req, res) => {
-//   try {
-//     // const userId = req.user && (req.user.id || req.user._id);
-//     // if (!userId) return badRequest(res, "Authentication required");
-
-//     const draft = await service.saveDraft(userId, req.body);
-//     return created(res, { data: draft, message: "Draft saved" });
-//   } catch (err) {
-//     return serverError(res, err.message);
-//   }
-// };
 exports.saveDraft = async (req, res) => {
   try {
-    // JWT ke bina testing ke liye dummy userId
-    const userId = "USR"; // hardcoded dummy user
-
+    const userId = req.user && (req.user.id || req.user._id);
+    if (!userId) return badRequest(res, "Authentication required");
     const draft = await service.saveDraft(userId, req.body);
     return created(res, { data: draft, message: "Draft saved" });
   } catch (err) {
@@ -37,9 +25,15 @@ exports.updateDraft = async (req, res) => {
 exports.uploadPhotos = async (req, res) => {
   try {
     if (!req.files || !req.files.length) return badRequest(res, "No files uploaded");
-
-    // map to public-accessible paths (adjust folder if you store elsewhere)
-    const photoUrls = req.files.map((f) => `/uploads/hostels/${f.filename}`);
+    // build public URLs for each file
+    const host = req.get('host');
+    const protocol = req.protocol;
+    const photoUrls = req.files.map(f => {
+      // detect subfolder from file.path (uploads/tiffins/...)
+      const rel = f.path.replace(process.cwd(), "").replace(/^[\\\/]+/, "").replace(/\\/g, "/");
+      // use absolute URL so client can fetch easily
+      return `${protocol}://${host}/${rel}`;
+    });
 
     const draft = await service.addPhotos(req.params.draftId, req.user && req.user.id, photoUrls);
     if (!draft) return notFound(res, "Draft not found or photos cannot be added");
