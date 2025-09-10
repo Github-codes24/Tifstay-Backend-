@@ -8,7 +8,7 @@ const PricingSchema = new mongoose.Schema({
 
 const TiffinSchema = new mongoose.Schema(
   {
-    // user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
 
     // Step 1: Basic Info
     name: { type: String, required: true },
