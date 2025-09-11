@@ -1,11 +1,9 @@
 const couponService = require('../services/coupon.service');
-// Use the existing response handlers from your project
 const { ok, created } = require('../utils/response');
 
 const getAllCoupons = async (req, res, next) => {
     try {
         const coupons = await couponService.getAllCoupons(req.query);
-        // Use the 'ok' function for a 200 OK response
         return ok(res, { message: 'Coupons retrieved successfully.', data: coupons });
     } catch (error) {
         next(error);
@@ -15,7 +13,6 @@ const getAllCoupons = async (req, res, next) => {
 const createCoupon = async (req, res, next) => {
     try {
         const coupon = await couponService.createCoupon(req.body);
-        // Use the 'created' function for a 201 Created response
         return created(res, { message: 'Coupon created successfully.', data: coupon });
     } catch (error) {
         next(error);
