@@ -1,20 +1,17 @@
 const mongoose = require('mongoose');
-const path = require('path');
-// load env (safe)
-require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
- 
+
+// Do NOT call dotenv here if you already load it once in server.js
+// ...existing code...
 const connectDB = async () => {
-    try {
-        console.log('MONGO_URI=', process.env.MONGO_URI);
-        await mongoose.connect(process.env.MONGO_URI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        });
-        console.log('MongoDB connected ->', mongoose.connection.host, mongoose.connection.name);
-    } catch (err) {
-        console.log('Mongo connect error ->', err.message);
-        throw err;
-    }
-}
- 
+  try {
+    console.log('MONGO_URI=', process.env.MONGO_URI);
+    // driver v4+ ignores useNewUrlParser/useUnifiedTopology options; call with URI only
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log('MongoDB connected ->', mongoose.connection.host, mongoose.connection.name);
+  } catch (err) {
+    console.error('Mongo connect error ->', err.message);
+    throw err;
+  }
+};
+
 module.exports = connectDB;

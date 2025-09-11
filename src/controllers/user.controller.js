@@ -1,5 +1,6 @@
 const AuthService = require('../services/auth.service');
 const UserService = require('../services/user.service');
+const path = require('path');
 const { ok, serverError, badRequest, notFound, created } = require('../utils/response');
 const User = require('../models/user.model');
 
@@ -130,5 +131,67 @@ exports.createUser = async (req, res) => {
     // maintain friendly messages for duplicate email
     if (err.message && err.message.toLowerCase().includes('email')) return badRequest(res, err.message);
     return serverError(res, err.message);
+  }
+};
+
+exports.uploadProfile = async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ status: 400, success: false, message: 'No file uploaded' });
+    const userId = req.user && (req.user.id || req.user._id);
+    if (!userId) return res.status(401).json({ status: 401, success: false, message: 'Authentication required' });
+
+    const rel = path.join('uploads', 'profiles', req.file.filename).replace(/\\/g, '/');
+    const url = `${req.protocol}://${req.get('host')}/${rel}`;
+    const user = await UserService.updateProfileAvatar(userId, url);
+    return res.status(200).json({ status: 200, success: true, message: 'Profile uploaded', data: { avatar: user.avatar } });
+  } catch (err) {
+    return res.status(500).json({ status: 500, success: false, message: err.message });
+  }
+};
+
+exports.uploadProfileById = async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ status: 400, success: false, message: 'No file uploaded' });
+    const userId = req.params.id;
+    const rel = path.join('uploads', 'profiles', req.file.filename).replace(/\\/g, '/');
+    const url = `${req.protocol}://${req.get('host')}/${rel}`;
+    const user = await UserService.updateProfileAvatar(userId, url);
+    if (!user) return res.status(404).json({ status: 404, success: false, message: 'User not found' });
+    return res.status(200).json({ status: 200, success: true, message: 'Profile uploaded for user', data: { avatar: user.avatar } });
+  } catch (err) {
+    return res.status(500).json({ status: 500, success: false, message: err.message });
+  }
+};
+
+exports.getHostelOwners = async (req, res) => {
+  try {
+    const q = req.query.q;
+    const limit = req.query.limit;
+    const users = await UserService.getUsersByProfile('hostel_owner', { q, limit });
+    return res.status(200).json({ status: 200, success: true, data: users, message: 'Hostel owners fetched' });
+  } catch (err) {
+    return res.status(500).json({ status: 500, success: false, message: err.message });
+  }
+};
+
+exports.getGuests = async (req, res) => {
+  try {
+    const q = req.query.q;
+    const limit = req.query.limit;
+    const users = await UserService.getUsersByProfile('guest', { q, limit });
+    return res.status(200).json({ status: 200, success: true, data: users, message: 'Guests fetched' });
+  } catch (err) {
+    return res.status(500).json({ status: 500, success: false, message: err.message });
+  }
+};
+
+exports.getTiffinProviders = async (req, res) => {
+  try {
+    const q = req.query.q;
+    const limit = req.query.limit;
+    const users = await UserService.getUsersByProfile('tiffin_provider', { q, limit });
+    return res.status(200).json({ status: 200, success: true, data: users, message: 'Tiffin providers fetched' });
+  } catch (err) {
+    return res.status(500).json({ status: 500, success: false, message: err.message });
   }
 };

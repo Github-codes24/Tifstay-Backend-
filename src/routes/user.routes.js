@@ -1,154 +1,54 @@
-/**
- * @openapi
- * tags:
- *   - name: Users
- *     description: User profile and admin user management
- *
- * /api/users/me:
- *   get:
- *     tags: [Users]
- *     summary: Get current authenticated user's profile
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Current user profile
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/User'
- *
- * /api/users/me:
- *   put:
- *     tags: [Users]
- *     summary: Update current authenticated user's profile
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               name: { type: string }
- *               phone: { type: string }
- *               profile: { type: string }
- *               bank: { type: object }
- *               guest: { type: object }
- *     responses:
- *       200:
- *         description: Profile updated
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/User'
- *
- * /api/users/me/change-password:
- *   post:
- *     tags: [Users]
- *     summary: Change password for current user
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required: [oldPassword, newPassword]
- *             properties:
- *               oldPassword: { type: string }
- *               newPassword: { type: string }
- *     responses:
- *       200:
- *         description: Password changed
- *
- * /api/users:
- *   get:
- *     tags: [Users]
- *     summary: List users (admin)
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Array of users
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/User'
- *
- * /api/users/{id}:
- *   get:
- *     tags: [Users]
- *     summary: Get user by id (admin)
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - name: id
- *         in: path
- *         required: true
- *         schema: { type: string }
- *     responses:
- *       200:
- *         description: User object
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/User'
- *
- * /api/users/{id}:
- *   put:
- *     tags: [Users]
- *     summary: Update user by id (admin)
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - name: id
- *         in: path
- *         required: true
- *         schema: { type: string }
- *     requestBody:
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *     responses:
- *       200:
- *         description: User updated
- *
- * /api/users/{id}:
- *   delete:
- *     tags: [Users]
- *     summary: Delete user by id (admin)
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - name: id
- *         in: path
- *         required: true
- *         schema: { type: string }
- *     responses:
- *       200:
- *         description: User deleted
- */
- 
 const express = require('express');
 const router = express.Router();
-const userCtrl = require('../controllers/user.controller');
 const auth = require('../middlewares/auth.middleware');
+const userCtrl = require('../controllers/user.controller');
+const avatarUpload = require('../middlewares/avatarUpload.middleware');
+// const profileUpload = require('../middlewares/profileUpload.middleware');
 
-// Logged-in user routes
-// router.get('/me', auth, userCtrl.getProfile);
-// router.put('/me', auth, userCtrl.updateProfile);
-// router.post('/me/change-password', auth, userCtrl.changePassword);
+// helper to provide clear fallback if a controller method is missing
+const missingHandler = (name) => (req, res) =>
+  res.status(501).json({ status: 501, success: false, message: `Handler ${name} not implemented` });
 
-// Admin routes (future: add role check middleware)
-router.post('/', userCtrl.createUser); // <-- create user (admin)
-router.get('/', userCtrl.getUsers);       // list all users
-router.get('/:id', userCtrl.getUserById); // get user by id
-router.put('/:id', userCtrl.updateUser);  // update user by id
-router.delete('/:id', userCtrl.deleteUser); // delete user by id
+// map expected handlers with safe defaults
+const createUser = userCtrl.createUser || missingHandler('createUser');
+const getHostelOwners = userCtrl.getHostelOwners || missingHandler('getHostelOwners');
+const getGuests = userCtrl.getGuests || missingHandler('getGuests');
+const getTiffinProviders = userCtrl.getTiffinProviders || missingHandler('getTiffinProviders');
+
+const getProfile = userCtrl.getProfile || missingHandler('getProfile');
+const updateProfile = userCtrl.updateProfile || missingHandler('updateProfile');
+const changePassword = userCtrl.changePassword || missingHandler('changePassword');
+const uploadAvatar = userCtrl.uploadAvatar || missingHandler('uploadAvatar');
+const uploadProfile = userCtrl.uploadProfile || missingHandler('uploadProfile');
+
+const getUsers = userCtrl.getUsers || missingHandler('getUsers');
+const getUserById = userCtrl.getUserById || missingHandler('getUserById');
+const updateUser = userCtrl.updateUser || missingHandler('updateUser');
+const uploadAvatarById = userCtrl.uploadAvatarById || missingHandler('uploadAvatarById');
+const uploadProfileById = userCtrl.uploadProfileById || missingHandler('uploadProfileById');
+const deleteUser = userCtrl.deleteUser || missingHandler('deleteUser');
+
+// Admin/create and filtered lists (static routes must come first)
+router.post('/', createUser);
+router.get('/hostel-owners', getHostelOwners);
+router.get('/guests', getGuests);
+router.get('/tiffin-providers', getTiffinProviders);
+
+// Current user endpoints
+router.get('/me', getProfile);
+router.put('/me', updateProfile);
+router.post('/me/change-password', changePassword);
+router.post('/me/avatar', avatarUpload.single('avatar'), uploadAvatar);
+// router.post('/me/profile', profileUpload.single('profile'), uploadProfile);
+
+// Generic list
+router.get('/', getUsers);
+
+// Parameter routes — keep these last so static routes match first
+router.get('/:id', getUserById);
+router.put('/:id', updateUser);
+router.post('/:id/avatar', avatarUpload.single('avatar'), uploadAvatarById);
+// router.post('/:id/profile', profileUpload.single('profile'), uploadProfileById);
+router.delete('/:id', deleteUser);
 
 module.exports = router;
