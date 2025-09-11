@@ -43,6 +43,8 @@ app.use("/api/tiffins", tiffinRoutes);
 app.use('/api/auth', authRoutes);
 
 app.use('/api/coupons', couponRoutes);
+app.use('/api/orders/tiffins', require('./routes/tiffinOrder.routes'));
+app.use('/api/orders/hostels', require('./routes/hostelOrder.routes'));
 
 // Swagger setup
 const swaggerJsdoc = require('swagger-jsdoc');
