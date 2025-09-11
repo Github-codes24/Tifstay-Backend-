@@ -1,11 +1,13 @@
-require('dotenv').config();
-require('express-async-errors');
-
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const path = require("path"); 
+// load .env from project root (one-time)
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
+require('express-async-errors');
+
+const mongoose = require('mongoose');
 
 const { notFound, errorHandler } = require('./middlewares/error.middleware');
 const userRoutes = require('./routes/user.routes');
@@ -66,6 +68,16 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 // 404 + error
 app.use(notFound);
 app.use(errorHandler(logger));
+
+console.log('MONGO_URI=', process.env.MONGO_URI);
+
+// If you already call mongoose.connect(...) somewhere, keep it. Add these listeners:
+mongoose.connection.on('connected', () => {
+  console.log('Mongo connected ->', mongoose.connection.host, mongoose.connection.name);
+});
+mongoose.connection.on('error', (err) => {
+  console.error('Mongo connection error ->', err);
+});
 
 module.exports = app;
 

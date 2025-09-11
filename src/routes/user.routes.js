@@ -140,9 +140,9 @@ const userCtrl = require('../controllers/user.controller');
 const auth = require('../middlewares/auth.middleware');
 
 // Logged-in user routes
-router.get('/me', auth, userCtrl.getProfile);
-router.put('/me', auth, userCtrl.updateProfile);
-router.post('/me/change-password', auth, userCtrl.changePassword);
+// router.get('/me', auth, userCtrl.getProfile);
+// router.put('/me', auth, userCtrl.updateProfile);
+// router.post('/me/change-password', auth, userCtrl.changePassword);
 
 // Admin routes (future: add role check middleware)
 router.post('/', userCtrl.createUser); // <-- create user (admin)

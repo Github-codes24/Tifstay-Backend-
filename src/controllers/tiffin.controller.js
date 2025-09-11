@@ -14,9 +14,7 @@ const { ok, created, serverError, badRequest, notFound } = require('../utils/res
 // };
 exports.saveDraft = async (req, res) => {
   try {
-    // JWT ke bina testing ke liye dummy userId
-    const userId = "USR"; // hardcoded dummy user
-
+    const userId = req.user && (req.user.id || req.user._id); // will be undefined if no auth
     const draft = await service.saveDraft(userId, req.body);
     return created(res, { data: draft, message: "Draft saved" });
   } catch (err) {

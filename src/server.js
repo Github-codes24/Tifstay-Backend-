@@ -1,15 +1,18 @@
-const app = require('./app');
-const { connectDB } = require('./config/database');
-const logger = require('./config/logger');
+const path = require('path');
+// load env
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
-const PORT = process.env.PORT || 5000;
+const connectDB = require('./config/database');
+const app = require('./app');
+
+const port = process.env.PORT || 5000;
 
 (async () => {
   try {
     await connectDB();
-    app.listen(PORT, () => logger.info(`Server running on port ${PORT}`));
+    app.listen(port, () => console.log(`Server listening on http://localhost:${port}`));
   } catch (err) {
-    logger.error('Failed to start server', { error: err.message });
+    console.error('Failed to start server', err);
     process.exit(1);
   }
 })();

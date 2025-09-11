@@ -1,16 +1,20 @@
 const mongoose = require('mongoose');
-const config = require('./index');
-const logger = require('./logger');
-
-mongoose.set('strictQuery', true);
-
-async function connectDB() {
-  const uri = config.mongoUri;
-  logger.info('Connecting to MongoDB...', { uri });
-  await mongoose.connect(uri, { autoIndex: true });
-  logger.info('MongoDB connected');
-  mongoose.connection.on('disconnected', () => logger.warn('MongoDB disconnected'));
-  mongoose.connection.on('error', (err) => logger.error('MongoDB error', { error: err.message }));
+const path = require('path');
+// load env (safe)
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
+ 
+const connectDB = async () => {
+    try {
+        console.log('MONGO_URI=', process.env.MONGO_URI);
+        await mongoose.connect(process.env.MONGO_URI, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true
+        });
+        console.log('MongoDB connected ->', mongoose.connection.host, mongoose.connection.name);
+    } catch (err) {
+        console.log('Mongo connect error ->', err.message);
+        throw err;
+    }
 }
-
-module.exports = { connectDB };
+ 
+module.exports = connectDB;
