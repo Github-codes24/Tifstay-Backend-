@@ -16,6 +16,7 @@ const tiffinRoutes = require("./routes/tiffin.routes");
 const logger = require('./config/logger');
 const authRoutes = require('./routes/auth.routes');
 
+const couponRoutes = require('./routes/coupon.routes.js');
 
 const app = express();
 
@@ -40,6 +41,8 @@ app.use("/api/hostels", hostelRoutes);
 app.use("/api/tiffins", tiffinRoutes);
 
 app.use('/api/auth', authRoutes);
+
+app.use('/api/coupons', couponRoutes);
 
 // Swagger setup
 const swaggerJsdoc = require('swagger-jsdoc');
@@ -75,6 +78,5 @@ app.use(errorHandler(logger));
 
 
 module.exports = app;
-
 
 

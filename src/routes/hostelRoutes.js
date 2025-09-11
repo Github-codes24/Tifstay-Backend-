@@ -6,7 +6,7 @@ const upload = require("../middlewares/upload.middleware");
 const auth = require("../middlewares/auth.middleware"); // require auth
 
 // Create hostel with photo upload (auth required)
-router.post("/",upload.array("photos", 5), hostelController.createHostel);
+router.post("/",auth, upload.array("photos", 5), hostelController.createHostel);
 
 // Get all hostels
 router.get("/", hostelController.getHostels);
