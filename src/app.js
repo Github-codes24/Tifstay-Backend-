@@ -18,6 +18,7 @@ const authRoutes = require('./routes/auth.routes');
 
 const couponRoutes = require('./routes/coupon.routes.js');
 const offerRoutes = require('./routes/offer.routes.js');
+const discountRoutes = require('./routes/discount.routes.js'); 
 
 const app = express();
 
@@ -45,6 +46,7 @@ app.use('/api/auth', authRoutes);
 
 app.use('/api/coupons', couponRoutes);
 app.use('/api/offers', offerRoutes);
+app.use('/api/discounts', discountRoutes);
 
 app.use('/api/orders/tiffins', require('./routes/tiffinOrder.routes'));
 app.use('/api/orders/hostels', require('./routes/hostelOrder.routes'));
