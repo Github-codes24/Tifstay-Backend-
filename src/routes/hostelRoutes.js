@@ -14,4 +14,7 @@ router.get("/", hostelController.getHostels);
 // Get hostel by ID
 router.get("/:id", hostelController.getHostelById);
 
+// Update hostel (auth required) — allow photos upload
+router.put("/:id", auth, upload.array("photos", 5), hostelController.updateHostel);
+
 module.exports = router;
