@@ -10,7 +10,7 @@ if (result.error) {
 }
 
 console.log('.env loaded from:', result.error ? (result.error.path || 'none') : (result.config && result.config.path) || 'unknown');
-console.log('MONGO_URI=', process.env.MONGO_URI);
+// console.log('MONGO_URI=', process.env.MONGO_URI);
 
 const connectDB = require('./config/database');
 const app = require('./app');

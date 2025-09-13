@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 // ...existing code...
 const connectDB = async () => {
   try {
-    console.log('MONGO_URI=', process.env.MONGO_URI);
+    // console.log('MONGO_URI=', process.env.MONGO_URI);
     // driver v4+ ignores useNewUrlParser/useUnifiedTopology options; call with URI only
     await mongoose.connect(process.env.MONGO_URI);
     console.log('MongoDB connected ->', mongoose.connection.host, mongoose.connection.name);
