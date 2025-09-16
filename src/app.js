@@ -21,6 +21,7 @@ const offerRoutes = require('./routes/offer.routes.js');
 const discountRoutes = require('./routes/discount.routes.js'); 
 
 const bannerRoutes = require('./routes/banner.routes.js');
+const staticPageRoutes = require('./routes/staticPage.routes.js');
 
 const app = express();
 
@@ -51,6 +52,7 @@ app.use('/api/offers', offerRoutes);
 app.use('/api/discounts', discountRoutes);
 
 app.use('/api/banners', bannerRoutes);
+app.use('/api/static-pages', staticPageRoutes);
 
 app.use('/api/orders/tiffins', require('./routes/tiffinOrder.routes'));
 app.use('/api/orders/hostels', require('./routes/hostelOrder.routes'));
