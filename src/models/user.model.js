@@ -26,7 +26,7 @@ const UserSchema = new mongoose.Schema({
 
   profile: { 
     type: String, 
-    enum: ['student', 'guest', 'hostel_owner', 'tiffin_provider'], 
+    enum: ['admin', 'guest', 'hostel_owner', 'tiffin_provider'], 
     // required: true 
   },
 
