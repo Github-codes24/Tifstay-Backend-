@@ -11,6 +11,7 @@ const storage = multer.diskStorage({
       let sub = 'others';
       if (base.includes('/tiffins')) sub = 'tiffins';
       else if (base.includes('/hostels')) sub = 'hostels';
+      else if (base.includes('/banners')) sub = 'banners';
       const dest = path.join(UPLOAD_ROOT, sub);
       fs.mkdirSync(dest, { recursive: true });
       cb(null, dest);
