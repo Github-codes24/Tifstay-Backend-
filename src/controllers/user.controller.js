@@ -50,12 +50,18 @@ exports.updateProfile = async (req, res) => {
  */
 exports.changePassword = async (req, res) => {
   try {
+    const userId = req.user && (req.user.id || req.user._id);
+    if (!userId) return res.status(401).json({ status: 401, success: false, message: 'Authentication required' });
+
     const { oldPassword, newPassword } = req.body;
-    if (!oldPassword || !newPassword) return badRequest(res, 'oldPassword and newPassword required');
-    const user = await AuthService.changePassword(req.user.id, oldPassword, newPassword);
-    return ok(res, { data: user, message: 'Password changed' });
+    if (!oldPassword || !newPassword) {
+      return res.status(400).json({ status: 400, success: false, message: 'oldPassword and newPassword are required' });
+    }
+
+    await AuthService.changePassword(userId, oldPassword, newPassword);
+    return res.json({ status: 200, success: true, message: 'Password changed successfully' });
   } catch (err) {
-    return serverError(res, err.message);
+    return res.status(400).json({ status: 400, success: false, message: err.message });
   }
 };
 

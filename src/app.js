@@ -17,6 +17,7 @@ const logger = require('./config/logger');
 const authRoutes = require('./routes/auth.routes');
 
 const couponRoutes = require('./routes/coupon.routes.js');
+const tiffinAdminRoutes = require("./routes/tiffin.admin.routes.js");
 
 const app = express();
 
@@ -39,6 +40,7 @@ app.use('/api/users', userRoutes);
 app.use("/api/hostels", hostelRoutes);
 
 app.use("/api/tiffins", tiffinRoutes);
+app.use("/api/admin/tiffins", tiffinAdminRoutes);
 
 app.use('/api/auth', authRoutes);
 

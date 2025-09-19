@@ -37,7 +37,7 @@ router.get('/tiffin-providers', getTiffinProviders);
 // Current user endpoints
 router.get('/me', getProfile);
 router.put('/me', updateProfile);
-router.post('/me/change-password', changePassword);
+router.post('/me/change-password', auth, userCtrl.changePassword);
 router.post('/me/avatar', avatarUpload.single('avatar'), uploadAvatar);
 // router.post('/me/profile', profileUpload.single('profile'), uploadProfile);
 
