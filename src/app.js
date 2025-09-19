@@ -55,7 +55,7 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerDefinition = {
   openapi: '3.0.0',
   info: {
-    title: 'NAG Tiffin API',
+    title: 'Tifstay',
     version: '1.0.0',
     description: 'API docs for Tiffin endpoints'
   },
