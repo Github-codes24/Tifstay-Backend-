@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-// const userCtrl = require('../controllers/user/users.controller');
+// const userCtrl = require('../controllers/user/user.controller');
 const auth = require('../../middlewares/auth.middleware');
-const userCtrl = require('../../controllers/user/user.controller');
+const userCtrl = require('../../controllers/user/user.controller.js');
 
 
 /**

@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const authCtrl = require('../controllers/auth.controller');
+// const passwordCtrl = require('../controllers/password.controller');
 
 /**
  * @openapi
  * tags:
  *   - name: Auth
- *     description: Authentication endpoints (local, google, apple)
+ *     description: Authentication endpoints (local, google, apple, password reset)
  */
 
 /**
@@ -125,5 +126,83 @@ router.post('/google', authCtrl.google);
  *         description: Apple login success
  */
 router.post('/apple', authCtrl.apple);
+
+/**
+ * @openapi
+ * /api/auth/forgot:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Send OTP to user email for password reset
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email]
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: mohit@example.com
+ *     responses:
+ *       200:
+ *         description: OTP sent
+ */
+router.post('/forgot', authCtrl.forgotPassword);
+
+/**
+ * @openapi
+ * /api/auth/verify:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Verify OTP for password reset
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email, otp]
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: mohit@example.com
+ *               otp:
+ *                 type: string
+ *                 example: "1234"
+ *     responses:
+ *       200:
+ *         description: OTP verified
+ */
+router.post('/verify', authCtrl.verifyOtp);
+
+/**
+ * @openapi
+ * /api/auth/reset:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Reset password with verified OTP
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email, otp, newPassword]
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: mohit@example.com
+ *               otp:
+ *                 type: string
+ *                 example: "1234"
+ *               newPassword:
+ *                 type: string
+ *                 example: NewPass@123
+ *     responses:
+ *       200:
+ *         description: Password reset successful
+ */
+router.post('/reset', authCtrl.resetPassword);
 
 module.exports = router;
