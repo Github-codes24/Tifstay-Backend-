@@ -28,6 +28,8 @@ exports.createHostel = async (req, res) => {
 
     // const userId = (req.user && (req.user.id || req.user._id));
     // if (!userId) return badRequest(res, "Authentication required");
+        const userId = req.user && (req.user.id || req.user._id);
+    if (!userId) return badRequest(res, "Authentication required");
 
     // basic validation
     const { name, hostelType } = req.body;
@@ -41,6 +43,7 @@ exports.createHostel = async (req, res) => {
 
     const hostelData = {
       // user: userId,
+      userId,
       name: req.body.name,
       hostelType: req.body.hostelType,
       description: req.body.description,
@@ -76,6 +79,46 @@ exports.getHostelById = async (req, res) => {
     const hostel = await HostelService.getHostelById(req.params.id);
     if (!hostel) return notFound(res, "Hostel not found");
     return ok(res, { data: hostel, message: "Hostel fetched" });
+  } catch (error) {
+    return serverError(res, error.message);
+  }
+};
+// Update hostel by ID
+exports.updateHostel = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user && (req.user.id || req.user._id);
+    if (!userId) return badRequest(res, "Authentication required");
+
+    // Prepare update payload (parse JSON strings if present)
+    const updateData = {
+      ...req.body,
+      pricing: req.body.pricing ? parseMaybeJSON(req.body.pricing, []) : undefined,
+      rooms: req.body.rooms ? parseMaybeJSON(req.body.rooms, []) : undefined,
+      facilities: req.body.facilities ? parseMaybeJSON(req.body.facilities, []) : undefined,
+      rules: req.body.rules ? parseMaybeJSON(req.body.rules, []) : undefined,
+      location: req.body.location ? parseMaybeJSON(req.body.location, {}) : undefined,
+      contact: req.body.contact ? parseMaybeJSON(req.body.contact, {}) : undefined
+    };
+
+    // If photos uploaded, map file paths and replace photos array (or append as you prefer)
+    if (Array.isArray(req.files) && req.files.length) {
+      const photos = req.files.map(file => {
+        const rel = file.path.replace(process.cwd(), "").replace(/^[\\\/]+/, "");
+        return rel.replace(/\\/g, "/");
+      });
+      updateData.photos = photos;
+    }
+
+    // Remove undefined fields so we don't overwrite existing data with undefined
+    const cleanUpdate = Object.fromEntries(
+      Object.entries(updateData).filter(([, v]) => v !== undefined)
+    );
+
+    const hostel = await HostelService.updateHostel(id, userId, cleanUpdate);
+    if (!hostel) return notFound(res, "Hostel not found or not authorized");
+
+    return ok(res, { data: hostel, message: "Hostel updated" });
   } catch (error) {
     return serverError(res, error.message);
   }

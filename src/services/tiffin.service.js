@@ -1,46 +1,51 @@
 const Tiffin = require("../models/tiffin.model");
 
-// Save draft
 exports.saveDraft = async (userId, data) => {
-  const draft = new Tiffin({ user: userId, ...data, status: "draft" });
-  return await draft.save();
+  try {
+    const payload = { ...data, status: "draft" };
+    if (userId) payload.user = userId;
+    const draft = new Tiffin(payload);
+    const saved = await draft.save();
+    console.log('tiffin saved id=', saved._id);
+    return saved;
+  } catch (err) {
+    console.error('saveDraft error ->', err);
+    throw err;
+  }
 };
 
-// Update draft step (only if still a draft and owned by user)
+// Update draft (only draft status). If userId provided enforce owner, else allow.
 exports.updateDraft = async (draftId, userId, data) => {
-  return await Tiffin.findOneAndUpdate(
-    { _id: draftId, user: userId, status: "draft" },
-    { $set: data },
-    { new: true }
-  );
+  const filter = { _id: draftId, status: "draft" };
+  if (userId) filter.user = userId;
+  return await Tiffin.findOneAndUpdate(filter, { $set: data }, { new: true });
 };
 
 // Upload photos (only to draft)
 exports.addPhotos = async (draftId, userId, photoUrls) => {
-  return await Tiffin.findOneAndUpdate(
-    { _id: draftId, user: userId, status: "draft" },
-    { $push: { photos: { $each: photoUrls } } },
-    { new: true }
-  );
+  const filter = { _id: draftId, status: "draft" };
+  if (userId) filter.user = userId;
+  return await Tiffin.findOneAndUpdate(filter, { $push: { photos: { $each: photoUrls } } }, { new: true });
 };
 
-// Preview draft (owner only)
+// Preview draft (owner only if userId provided)
 exports.previewDraft = async (draftId, userId) => {
-  return await Tiffin.findOne({ _id: draftId, user: userId });
+  const filter = { _id: draftId };
+  if (userId) filter.$or = [{ user: userId }, { status: { $ne: "draft" } }]; // owner can preview draft, others can view if not draft
+  return await Tiffin.findOne(filter);
 };
 
-// Submit final draft (only from draft -> submitted)
+// Submit final draft (draft -> submitted)
 exports.submitDraft = async (draftId, userId) => {
-  return await Tiffin.findOneAndUpdate(
-    { _id: draftId, user: userId, status: "draft" },
-    { $set: { status: "submitted", submittedAt: new Date() } },
-    { new: true }
-  );
+  const filter = { _id: draftId, status: "draft" };
+  if (userId) filter.user = userId;
+  return await Tiffin.findOneAndUpdate(filter, { $set: { status: "submitted", submittedAt: new Date() } }, { new: true });
 };
 
-// Get single tiffin: allow if published OR owner
+// Get single tiffin: published OR owner
 exports.getTiffin = async (id, userId) => {
-  const orConditions = [{ status: "published" }];
-  if (userId) orConditions.push({ user: userId });
-  return await Tiffin.findOne({ _id: id, $or: orConditions });
+  if (userId) {
+    return await Tiffin.findOne({ _id: id, $or: [{ status: "published" }, { user: userId }] });
+  }
+  return await Tiffin.findOne({ _id: id, status: "published" });
 };

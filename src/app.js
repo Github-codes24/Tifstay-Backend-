@@ -1,11 +1,13 @@
-require('dotenv').config();
-require('express-async-errors');
-
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
-const path = require("path"); 
+const path = require("path");
+// load .env from project root (one-time)
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
+require('express-async-errors');
+
+const mongoose = require('mongoose');
 
 const { notFound, errorHandler } = require('./middlewares/error.middleware');
 const userRoutes = require('./routes/user.routes');
@@ -14,6 +16,8 @@ const tiffinRoutes = require("./routes/tiffin.routes");
 const logger = require('./config/logger');
 const authRoutes = require('./routes/auth.routes');
 
+const couponRoutes = require('./routes/coupon.routes.js');
+const tiffinAdminRoutes = require("./routes/tiffin.admin.routes.js");
 
 const app = express();
 
@@ -24,8 +28,8 @@ app.use(cors());
 app.use(helmet());
 app.use(morgan('dev'));
 
-// Serve uploaded images
-app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+// Serve uploaded files
+app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
 // Health
 app.get('/health', (req, res) => res.json({ status: 'ok', uptime: process.uptime() }));
@@ -36,8 +40,13 @@ app.use('/api/users', userRoutes);
 app.use("/api/hostels", hostelRoutes);
 
 app.use("/api/tiffins", tiffinRoutes);
+app.use("/api/admin/tiffins", tiffinAdminRoutes);
 
 app.use('/api/auth', authRoutes);
+
+app.use('/api/coupons', couponRoutes);
+app.use('/api/orders/tiffins', require('./routes/tiffinOrder.routes'));
+app.use('/api/orders/hostels', require('./routes/hostelOrder.routes'));
 
 // Swagger setup
 const swaggerJsdoc = require('swagger-jsdoc');
@@ -46,7 +55,7 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerDefinition = {
   openapi: '3.0.0',
   info: {
-    title: 'NAG Tiffin API',
+    title: 'Tifstay',
     version: '1.0.0',
     description: 'API docs for Tiffin endpoints'
   },
@@ -67,7 +76,11 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 app.use(notFound);
 app.use(errorHandler(logger));
 
-module.exports = app;
 
+
+// If you already call mongoose.connect(...) somewhere, keep it. Add these listeners:
+
+
+module.exports = app;
 
 

@@ -6,9 +6,7 @@ const { ok, created, serverError, badRequest } = require('../utils/response');
  */
 exports.saveDraft = async (req, res) => {
   try {
-    const userId = req.user && (req.user.id || req.user._id);
-    if (!userId) return res.status(400).json({ status: 400, success: false, message: "Authentication required" });
-
+    const userId = req.user && (req.user.id || req.user._id); // will be undefined if no auth
     const draft = await service.saveDraft(userId, req.body);
     return created ? created(res, { data: draft, message: "Draft saved" }) : res.status(201).json({ status: 201, success: true, data: draft, message: "Draft saved" });
   } catch (err) {

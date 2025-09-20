@@ -32,10 +32,17 @@ async function authenticate(email, password) {
   return user;
 }
 
-async function getUsersByProfile(profile) {
-  const allowed = ['student', 'guest', 'hostel_owner', 'tiffin_provider'];
-  if (!allowed.includes(profile)) throw new Error('Invalid profile');
-  return User.find({ profile }).sort({ createdAt: -1 });
+async function updateProfileAvatar(userId, avatarUrl) {
+  return await User.findByIdAndUpdate(userId, { $set: { avatar: avatarUrl } }, { new: true, runValidators: true });
+}
+
+async function getUsersByProfile(profile, { q, limit = 100 } = {}) {
+  const filter = { profile };
+  if (q) filter.name = { $regex: q, $options: 'i' };
+  return await User.find(filter)
+    .select('-password -resetPasswordToken -resetPasswordExpires')
+    .limit(Number(limit))
+    .lean();
 }
 
 module.exports = {
@@ -45,5 +52,6 @@ module.exports = {
   updateUser,
   deleteUser,
   authenticate,
-  getUsersByProfile
+  updateProfileAvatar,
+  getUsersByProfile,
 };
