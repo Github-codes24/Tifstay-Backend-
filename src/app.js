@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
+
 const path = require("path");
 // load .env from project root (one-time)
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
@@ -58,14 +59,32 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerDefinition = {
   openapi: '3.0.0',
   info: {
-    title: 'Tifstay',
+    title: 'Tiffstay APIs',
     version: '1.0.0',
-    description: 'API docs for Tiffin endpoints'
+    description: 'API documentation for Tiffin, Hostel, User, Auth'
   },
   servers: [
-    { url: process.env.SWAGGER_BASE_URL || 'https://tifstay-backend.onrender.com' }
-  ]
+    {
+      url: process.env.SWAGGER_BASE_URL || 'https://tifstay-backend.onrender.com/api',
+      description: "Render Deployment"
+    },
+    {
+      url: 'http://localhost:5000/api',
+      description: "Local Dev"
+    }
+  ],
+  components: {
+    securitySchemes: {
+      bearerAuth: {
+        type: "http",
+        scheme: "bearer",
+        bearerFormat: "JWT"
+      }
+    }
+  },
+  security: [{ bearerAuth: [] }]
 };
+
 
 const options = {
   swaggerDefinition,
@@ -79,7 +98,11 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 app.use(notFound);
 app.use(errorHandler(logger));
 
-
+app.use(cors({
+  origin: "*", // development ke liye sab allow
+  methods: ["GET","POST","PUT","DELETE","PATCH","OPTIONS"],
+  allowedHeaders: ["Origin","X-Requested-With","Content-Type","Accept","Authorization"]
+}));
 
 // If you already call mongoose.connect(...) somewhere, keep it. Add these listeners:
 
