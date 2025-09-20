@@ -11,6 +11,8 @@ const mongoose = require('mongoose');
 
 const { notFound, errorHandler } = require('./middlewares/error.middleware');
 const userRoutes = require('./routes/user.routes');
+const userRoute = require('./routes/user/user.routes.js');
+
 const hostelRoutes = require("./routes/hostelRoutes");
 const tiffinRoutes = require("./routes/tiffin.routes");
 const logger = require('./config/logger');
@@ -35,7 +37,8 @@ app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 app.get('/health', (req, res) => res.json({ status: 'ok', uptime: process.uptime() }));
 
 // API routes
-app.use('/api/users', userRoutes);
+// app.use('/api/users', userRoutes);
+app.use('/api/users', userRoute);
 
 app.use("/api/hostels", hostelRoutes);
 
@@ -66,7 +69,7 @@ const swaggerDefinition = {
 
 const options = {
   swaggerDefinition,
-  apis: ['./src/routes/*.js', './src/controllers/*.js'] // JSDoc in these files will be included
+  apis: ['./src/routes/*.js', './src/controllers/*.js',  './src/routes/**/*.js',] // JSDoc in these files will be included
 };
 
 const specs = swaggerJsdoc(options);
