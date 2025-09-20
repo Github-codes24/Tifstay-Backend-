@@ -1,5 +1,5 @@
-// src/utils/jwt.js
 const jwt = require('jsonwebtoken');
+
 const config = {
   secret: process.env.JWT_SECRET || 'changeme',
   expiresIn: process.env.JWT_EXPIRES_IN || '7d'
