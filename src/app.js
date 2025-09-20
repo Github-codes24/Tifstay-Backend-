@@ -63,7 +63,7 @@ const swaggerDefinition = {
     description: 'API docs for Tiffin endpoints'
   },
   servers: [
-    { url: process.env.SWAGGER_BASE_URL || 'http://localhost:5000' }
+    { url: process.env.SWAGGER_BASE_URL || 'https://tifstay-backend.onrender.com' }
   ]
 };
 
