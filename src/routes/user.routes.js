@@ -5,7 +5,7 @@ const userCtrl = require('../controllers/user.controller');
 const avatarUpload = require('../middlewares/avatarUpload.middleware');
 // const profileUpload = require('../middlewares/profileUpload.middleware');
 
-// helper to provide clear fallback if a controller method is missing
+// helper to provide clear fallback if a controller method is missing.
 const missingHandler = (name) => (req, res) =>
   res.status(501).json({ status: 501, success: false, message: `Handler ${name} not implemented` });
 
