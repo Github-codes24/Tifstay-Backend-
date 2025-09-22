@@ -20,7 +20,10 @@ const logger = require('./config/logger');
 const authRoutes = require('./routes/auth.routes');
 
 const couponRoutes = require('./routes/coupon.routes.js');
+
+// admin list
 const tiffinAdminRoutes = require("./routes/tiffin.admin.routes.js");
+const hosteladminRoutes = require("./routes/hostel.admin.routes.js");
 
 const app = express();
 
@@ -44,6 +47,8 @@ app.use('/api/users', userRoute);
 app.use("/api/hostels", hostelRoutes);
 
 app.use("/api/tiffins", tiffinRoutes);
+
+app.use("/api/admin/hostels", hosteladminRoutes);
 app.use("/api/admin/tiffins", tiffinAdminRoutes);
 
 app.use('/api/auth', authRoutes);
@@ -65,7 +70,7 @@ const swaggerDefinition = {
   },
   servers: [
     {
-      url: process.env.SWAGGER_BASE_URL || 'https://tifstay-backend.onrender.com/api',
+      url: process.env.SWAGGER_BASE_URL || 'https://tifstay-backend.onrender.com',
       description: "Render Deployment"
     },
     {
